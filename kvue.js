@@ -46,7 +46,7 @@ class Kvue {
 
     walk(obj) {
         if (Array.isArray(obj)) {
-            console.log('处理数组=====')
+            console.log('=====处理数组=====')
         } else {
             observe(obj)
         }
