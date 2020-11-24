@@ -11,19 +11,27 @@
 <body>
     <div id="app">
         <h4>这是标题</h4>
-        <p>{{counter}}</p>
+        <p @click='add'>{{counter}}</p>
+        <p v-text='counter'></p>
+        <p v-html='des'></p>
     </div>
 </body>
 <script>
     const app = new Kvue({
-        el: '#app',
-        data: {
-            counter: 1
-        }
-    })
-    setInterval(() => {
-        app.counter++
-    }, 1000)
+            el: '#app',
+            data: {
+                counter: 1,
+                des: '<span style="background:red;">这是描述</span>'
+            },
+            methods: {
+                add() {
+                    this.counter++
+                }
+            },
+        })
+        // setInterval(() => {
+        //     app.counter++
+        // }, 1000)
 </script>
 
 </html>

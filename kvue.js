@@ -40,8 +40,10 @@ class Kvue {
     constructor(options) {
         this.$options = options;
         this.$data = options.data;
+        this.$el = options.el;
         this.walk(this.$data);
         proxy(this);
+        new Compiler(this.$el, this)
     }
 
     walk(obj) {
@@ -50,5 +52,69 @@ class Kvue {
         } else {
             observe(obj)
         }
+    }
+}
+
+
+class Compiler {
+    constructor(el, vm) {
+        this.$el = document.querySelector(el);
+        this.$vm = vm;
+        if (this.$el) {
+            this.compile(this.$el);
+        }
+    }
+    compile(el) {
+        const childNodes = el.childNodes;
+        Array.from(childNodes).forEach(node => {
+            if (this.isElement(node)) {
+                const nodeAttrs = node.attributes;
+                Array.from(nodeAttrs).forEach(attr => {
+                    const attrName = attr.name;
+                    const attrVal = attr.value;
+                    if (this.isDirective(attrName)) {
+                        const dir = attrName.substring(2);
+                        this[dir] && this[dir](node, attrVal)
+                    } else if (this.isEvent(attrName)) {
+                        const eventType = attrName.substring(1);
+                        console.log('事件', attrName)
+                        this.eventHandle(node, eventType, attrVal);
+                    }
+
+                });
+                // this.isDirective(nod)
+            } else if (this.isIner(node)) {
+                this.conpileText(node, RegExp.$1)
+            }
+            if (node.childNodes) {
+                this.compile(node);
+            }
+        })
+    }
+    isElement(node) {
+        return node.nodeType == 1
+    }
+    text(node, exp) {
+        node.textContent = this.$vm[exp]
+    }
+    html(node, exp) {
+        node.innerHTML = this.$vm[exp]
+    }
+    isIner(node) {
+        return node.nodeType == 3 && /\{\{(.*)\}\}/.test(node.textContent)
+    }
+    conpileText(node, exp) {
+        node.textContent = this.$vm[exp];
+    }
+    isDirective(attrName) {
+        return attrName.startsWith('v-')
+    }
+    isEvent(attrName) {
+        return attrName.startsWith('@')
+    }
+    eventHandle(node, eventType, attrVal) {
+        const { methods } = this.$vm.$options;
+        const fn = methods && methods[attrVal];
+        node.addEventListener(eventType, fn.bind(this.$vm), false);
     }
 }
