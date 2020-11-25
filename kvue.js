@@ -110,7 +110,12 @@ class Compiler {
         new Watcher(this.$vm, exp, function(val) {
             fn && fn(node, val);
         })
-
+    }
+    model(node, exp) {
+        this.update(node, exp, 'model');
+        node.addEventListener('input', (e) => {
+            this.$vm[exp] = e.target.value
+        }, false)
     }
     html(node, exp) {
         // node.innerHTML = this.$vm[exp]
@@ -123,6 +128,9 @@ class Compiler {
     }
     htmlUpdater(node, val) {
         node.innerHTML = val;
+    }
+    modelUpdater(node, val) {
+        node.value = val;
     }
     isIner(node) {
         return node.nodeType == 3 && /\{\{(.*)\}\}/.test(node.textContent)

@@ -15,6 +15,10 @@
         <p v-text='counter'></p>
         <p v-html='des'></p>
         <p @click='doubleNum'>{{num}}</p>
+        <input v-model='name' />
+        <div><strong>
+            name:{{name}}
+        </strong></div>
     </div>
 </body>
 <script>
@@ -23,6 +27,7 @@
             data: {
                 counter: 1,
                 num: 1,
+                name: 'zhoulin',
                 des: '<span style="background:red;">这是描述</span>'
             },
             methods: {
