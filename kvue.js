@@ -1,10 +1,10 @@
-let watchers = [];
-
 function defineReactive(obj, key, val) {
     observe(val);
+    const dep = new Dep();
     Object.defineProperty(obj, key, {
         get() {
             console.log(`get:${key},val:${val}`)
+            Dep.target && dep.addDep(Dep.target);
             return val;
         },
         set(newVal) {
@@ -12,9 +12,10 @@ function defineReactive(obj, key, val) {
             if (newVal == val) return;
             observe(newVal);
             val = newVal;
-            watchers.forEach(watch => {
-                watch.update()
-            })
+            // watchers.forEach(watch => {
+            //     watch.update()
+            // })
+            dep.notity();
             console.log(`set:${key},val:${newVal}`)
         }
     });
@@ -104,7 +105,6 @@ class Compiler {
         this.update(node, exp, 'text');
     }
     update(node, exp, type) {
-
         const fn = this[type + 'Updater'];
         fn && fn(node, this.$vm[exp]);
         new Watcher(this.$vm, exp, function(val) {
@@ -145,13 +145,28 @@ class Compiler {
 }
 
 
-
+// const watchers = [];
+class Dep {
+    constructor() {
+        this.watchers = []
+    }
+    addDep() {
+        console.log('====')
+        this.watchers.push(Dep.target)
+    }
+    notity() {
+        this.watchers.forEach(watch => watch.update())
+    }
+}
 class Watcher {
     constructor(vm, key, fn) {
         this.$vm = vm;
         this.$key = key;
         this.updateFn = fn;
-        watchers.push(this);
+        Dep.target = this;
+        this.$vm[this.$key];
+        Dep.target = null;
+        // watchers.push(this);
     }
 
     update() {
