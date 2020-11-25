@@ -1,3 +1,5 @@
+let watchers = [];
+
 function defineReactive(obj, key, val) {
     observe(val);
     Object.defineProperty(obj, key, {
@@ -10,6 +12,9 @@ function defineReactive(obj, key, val) {
             if (newVal == val) return;
             observe(newVal);
             val = newVal;
+            watchers.forEach(watch => {
+                watch.update()
+            })
             console.log(`set:${key},val:${newVal}`)
         }
     });
@@ -77,7 +82,6 @@ class Compiler {
                         this[dir] && this[dir](node, attrVal)
                     } else if (this.isEvent(attrName)) {
                         const eventType = attrName.substring(1);
-                        console.log('事件', attrName)
                         this.eventHandle(node, eventType, attrVal);
                     }
 
@@ -95,16 +99,37 @@ class Compiler {
         return node.nodeType == 1
     }
     text(node, exp) {
-        node.textContent = this.$vm[exp]
+        // node.textContent = this.$vm[exp]
+        // this.textUpdater(node, val);
+        this.update(node, exp, 'text');
+    }
+    update(node, exp, type) {
+
+        const fn = this[type + 'Updater'];
+        fn && fn(node, this.$vm[exp]);
+        new Watcher(this.$vm, exp, function(val) {
+            fn && fn(node, val);
+        })
+
     }
     html(node, exp) {
-        node.innerHTML = this.$vm[exp]
+        // node.innerHTML = this.$vm[exp]
+        // this.htmlUpdater(node, val);
+        this.update(node, exp, 'html');
+    }
+    textUpdater(node, val) {
+        node.textContent = val;
+        // node.textContent = this.$vm[exp]
+    }
+    htmlUpdater(node, val) {
+        node.innerHTML = val;
     }
     isIner(node) {
         return node.nodeType == 3 && /\{\{(.*)\}\}/.test(node.textContent)
     }
     conpileText(node, exp) {
-        node.textContent = this.$vm[exp];
+        // node.textContent = this.$vm[exp];
+        this.update(node, exp, 'text');
     }
     isDirective(attrName) {
         return attrName.startsWith('v-')
@@ -117,4 +142,20 @@ class Compiler {
         const fn = methods && methods[attrVal];
         node.addEventListener(eventType, fn.bind(this.$vm), false);
     }
+}
+
+
+
+class Watcher {
+    constructor(vm, key, fn) {
+        this.$vm = vm;
+        this.$key = key;
+        this.updateFn = fn;
+        watchers.push(this);
+    }
+
+    update() {
+        this.updateFn.call(this.$vm, this.$vm[this.$key])
+    }
+
 }
