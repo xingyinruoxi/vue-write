@@ -37,12 +37,12 @@
             // return d1;
 
             // vnode实现
-            return h('div', null, this.counter + '')
-                // return h(
-                //     "div", {
-                //         id: "app",
-                //     }, [h("p", null, this.counter + "")]
-                // );
+            // return h('div', null, this.counter + '')
+            return h(
+                "div", {
+                    id: "app",
+                }, [h("p", null, this.counter + ""), h("p", null, this.counter * 2 + "")]
+            );
         },
         methods: {
             add() {

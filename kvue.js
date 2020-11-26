@@ -119,7 +119,18 @@ class Kvue {
                         el.textContent = newCh;
                     }
                 } else {
-
+                    // console.log('递规数据渲染');
+                    // 新的是数组
+                    // 老的是文本
+                    if (typeof oldCh == 'string') {
+                        // 清空文本
+                        el.innerHTML = '';
+                        newCh.forEach(vnode => {
+                            this.createElm(vnode)
+                        })
+                    } else {
+                        this.updateChildren(el, oldCh, newCh);
+                    }
                 }
             }
         }
@@ -147,6 +158,15 @@ class Kvue {
         // 保存vnode
         vnode.el = el;
         return el;
+    }
+
+    // 更新孩子
+    updateChildren(el, oldCh, newCh) {
+        const len = Math.min(oldCh.length, newCh.length);
+        // 遍历较短的那个子素组
+        for (let i = 0; i < len; i++) {
+            this._patch_(oldCh[i], newCh[i]);
+        }
     }
     walk(obj) {
         if (Array.isArray(obj)) {
