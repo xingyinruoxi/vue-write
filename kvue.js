@@ -84,8 +84,7 @@ class Kvue {
         }
     }
     _patch_(oldVnode, vnode) {
-        // oldVnode是dom
-        // console.log("---", oldVnode);
+
         if (oldVnode.nodeType) {
             // 初始化过程
             const parent = oldVnode.parentElement;
@@ -94,15 +93,35 @@ class Kvue {
             // props
             // children
             const el = this.createElm(vnode);
-            console.log("vnode", vnode);
-            console.log("el", el);
             parent.insertBefore(el, refElm);
             parent.removeChild(oldVnode);
             //保存vnode
             this._vnode = vnode;
         } else {
             // update todo
-            console.log("update");
+            // console.log("update");
+            // 获取dom;
+            const el = vnode.el = oldVnode.el;
+            if (oldVnode.tag === vnode.tag) {
+                // props
+
+                // children
+                const oldCh = oldVnode.children;
+                const newCh = vnode.children;
+
+                if (typeof newCh == 'string') {
+                    if (typeof oldCh == 'string') {
+                        // 文本更新
+                        if (newCh !== oldCh) {
+                            el.textContent = newCh;
+                        }
+                    } else {
+                        el.textContent = newCh;
+                    }
+                } else {
+
+                }
+            }
         }
     }
     createElm(vnode) {
@@ -113,8 +132,6 @@ class Kvue {
                 el.setAttribute(key, vnode.props[key]);
             }
         }
-
-        console.log("vnode.children", vnode.children);
         // children
         if (vnode.children) {
             if (typeof vnode.children == "string") {
@@ -122,7 +139,6 @@ class Kvue {
             } else {
                 vnode.children.forEach((v) => {
                     const child = this.createElm(v);
-                    console.log("child", child);
                     el.appendChild(child);
                 });
             }

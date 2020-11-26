@@ -37,11 +37,12 @@
             // return d1;
 
             // vnode实现
-            return h(
-                "div", {
-                    id: "app",
-                }, [h("p", null, this.counter + "")]
-            );
+            return h('div', null, this.counter + '')
+                // return h(
+                //     "div", {
+                //         id: "app",
+                //     }, [h("p", null, this.counter + "")]
+                // );
         },
         methods: {
             add() {
@@ -52,9 +53,9 @@
             },
         },
     });
-    // setInterval(() => {
-    //     app.counter++;
-    // }, 1000);
+    setInterval(() => {
+        app.counter++;
+    }, 1000);
 </script>
 
 </html>
