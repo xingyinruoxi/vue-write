@@ -2,8 +2,8 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script src="./kvue.js"></script>
 </head>
@@ -11,45 +11,50 @@
 <body>
     <div id="app">
         <h4>这是标题</h4>
-        <p @click='add'>{{counter}}</p>
-        <p v-text='counter'></p>
-        <p v-html='des'></p>
-        <p @click='doubleNum'>{{num}}</p>
-        <input v-model='name' />
-        <div><strong>
-            name:{{name}}
-        </strong></div>
+        <p @click="add">{{counter}}</p>
+        <p v-text="counter"></p>
+        <p v-html="des"></p>
+        <p @click="doubleNum">{{num}}</p>
+        <input v-model="name" />
+        <div><strong> name:{{name}} </strong></div>
     </div>
 </body>
 <script>
     const app = new Kvue({
-        el: '#app',
+        el: "#app",
         data: {
             counter: 1,
             num: 1,
-            name: 'zhoulin',
-            des: '<span style="background:red;">这是描述</span>'
+            name: "zhoulin",
+            des: '<span style="background:red;">这是描述</span>',
         },
-        render() {
-            const dl = document.createElement('div');
-            dl.id = 'app';
-            const p1 = document.createElement('p');
-            p1.textContent = this.counter;
-            dl.appendChild(p1);
-            return dl;
+        render(h) {
+            // const d1 = document.createElement("div");
+            // d1.id = "#app";
+            // const p1 = document.createElement("p");
+            // p1.textContent = this.counter;
+            // d1.appendChild(p1);
+            // return d1;
+
+            // vnode实现
+            return h(
+                "div", {
+                    id: "app",
+                }, [h("p", null, this.counter + "")]
+            );
         },
         methods: {
             add() {
-                this.counter++
+                this.counter++;
             },
             doubleNum() {
                 this.num++;
-            }
+            },
         },
-    })
-    setInterval(() => {
-        app.counter++
-    }, 1000)
+    });
+    // setInterval(() => {
+    //     app.counter++;
+    // }, 1000);
 </script>
 
 </html>
