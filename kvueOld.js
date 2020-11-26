@@ -48,28 +48,9 @@ class Kvue {
         this.$el = options.el;
         this.walk(this.$data);
         proxy(this);
-        // new Compiler(this.$el, this)
-        // 1、$mount()
-        // 2、Watcher:一个组件一个watcher
-        if (options.el) {
-            this.$mount(options.el)
-        }
+        new Compiler(this.$el, this)
     }
-    $mount(el) {
-        this.$el = document.querySelector(el);
 
-        // updateComponent
-        const updateComponent = () => {
-            const { render } = this.$options;
-            const el = render.call(this); //真实dom
-            const parent = this.$el.parentElement;
-            parent.insertBefore(el, this.$el.nextSibling);
-            parent.removeChild(this.$el);
-            this.$el = el;
-        };
-        // 创建一个Watcher实例
-        new Watcher(this, updateComponent)
-    }
     walk(obj) {
         if (Array.isArray(obj)) {
             console.log('===处理数组====')
@@ -174,36 +155,29 @@ class Compiler {
 // const watchers = [];
 class Dep {
     constructor() {
-        this.watchers = new Set()
+        this.watchers = []
     }
     addDep() {
         console.log('====')
-        this.watchers.add(Dep.target)
+        this.watchers.push(Dep.target)
     }
     notity() {
         this.watchers.forEach(watch => watch.update())
     }
 }
 class Watcher {
-    constructor(vm, expOrfn) {
+    constructor(vm, key, fn) {
         this.$vm = vm;
-        this.getter = expOrfn;
-
-        this.get();
-        // Dep.target = this;
-        // this.$vm[this.$key];
-        // Dep.target = null;
-    }
-
-    get() {
+        this.$key = key;
+        this.updateFn = fn;
         Dep.target = this;
-        // this.$vm[this.$key];
-        this.getter.call(this.$vm)
+        this.$vm[this.$key];
         Dep.target = null;
+        // watchers.push(this);
     }
+
     update() {
-        // this.updateFn.call(this.$vm, this.$vm[this.$key])
-        this.get()
+        this.updateFn.call(this.$vm, this.$vm[this.$key])
     }
 
 }

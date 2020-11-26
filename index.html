@@ -23,25 +23,33 @@
 </body>
 <script>
     const app = new Kvue({
-            el: '#app',
-            data: {
-                counter: 1,
-                num: 1,
-                name: 'zhoulin',
-                des: '<span style="background:red;">这是描述</span>'
+        el: '#app',
+        data: {
+            counter: 1,
+            num: 1,
+            name: 'zhoulin',
+            des: '<span style="background:red;">这是描述</span>'
+        },
+        render() {
+            const dl = document.createElement('div');
+            dl.id = 'app';
+            const p1 = document.createElement('p');
+            p1.textContent = this.counter;
+            dl.appendChild(p1);
+            return dl;
+        },
+        methods: {
+            add() {
+                this.counter++
             },
-            methods: {
-                add() {
-                    this.counter++
-                },
-                doubleNum() {
-                    this.num++;
-                }
-            },
-        })
-        // setInterval(() => {
-        //     app.counter++
-        // }, 1000)
+            doubleNum() {
+                this.num++;
+            }
+        },
+    })
+    setInterval(() => {
+        app.counter++
+    }, 1000)
 </script>
 
 </html>
